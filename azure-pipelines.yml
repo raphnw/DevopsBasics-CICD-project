@@ -21,6 +21,9 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
+- script: |
+    ls -la /home/vsts/work/1/a
+  displayName: 'List contents of the artifact directory'
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(build.SourceDirectory)'
