@@ -24,11 +24,12 @@ steps:
 - script: |
     echo "Building project..."
     mkdir -p $(Build.ArtifactStagingDirectory)
-    echo "Sample artifact" > $(Build.ArtifactStagingDirectory)/artifact.txt
-  displayName: "Build Project"
+    cp target/*.war $(Build.ArtifactStagingDirectory)/webapp.war
+  displayName: "Prepare webapp.war"
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: drop
+    pathToPublish: $(Build.ArtifactStagingDirectory)/webapp.war
+    artifactName: webapp.war
+
 
