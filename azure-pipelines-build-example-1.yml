@@ -21,15 +21,16 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
-- script: |
-    echo "Building project..."
-    mkdir -p $(Build.ArtifactStagingDirectory)
-    cp target/*.war $(Build.ArtifactStagingDirectory)/webapp.war
-  displayName: "Prepare webapp.war"
+- task: CopyFiles@2
+  inputs:
+    contents: '**/*.war'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/webapp.war'
+  displayName: "Copy WAR files to Artifact Staging Directory"
 
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: $(Build.ArtifactStagingDirectory)/webapp.war
     artifactName: webapp.war
+
 
 
