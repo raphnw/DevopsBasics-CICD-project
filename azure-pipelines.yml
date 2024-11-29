@@ -26,9 +26,3 @@ steps:
     SourceFolder: '$(build.SourceDirectory)'
     Contents: '**/.war'
     TargetFolder: '/home/vsts/work/1/a'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'warfile'
-    publishLocation: 'Container'
