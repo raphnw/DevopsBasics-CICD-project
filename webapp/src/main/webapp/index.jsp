@@ -3,6 +3,6 @@
 <h2> Good Luck everyone!</h2>
 <h2> Thank you!</h2>
 <h2> Have a great day.</h2>
-<h2> Please, let me know if this exercise was help.</h2>
+<h2> Please, let me know if this exercise was helpful.</h2>
 <h2> I hope we are all having fun</h2>
 
