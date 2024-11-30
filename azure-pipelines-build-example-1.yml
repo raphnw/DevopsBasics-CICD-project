@@ -10,6 +10,14 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- checkout: self
+  persistCredentials: true
+
+- script: |
+    chmod -R u+rwx .git
+    ls -la
+  displayName: "Fix Permissions and Verify Files"
+
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
@@ -29,9 +37,10 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'warfile'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'warfile'
     publishLocation: 'Container'
+
 
 
 
