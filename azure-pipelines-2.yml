@@ -22,7 +22,7 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
-# Step 2: List contents of the artifact directory for debugging
+# Step 2: List contents of the artifact staging directory for debugging
 - script: |
     ls -la $(Build.ArtifactStagingDirectory)
   displayName: 'List contents of the artifact directory'
@@ -35,7 +35,14 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
   displayName: 'Copy WAR files to artifact staging directory'
 
-# Step 4: Build and push Docker image
+# Step 4: Publish the artifact to Azure DevOps
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'warfile'
+  displayName: 'Publish WAR file artifact'
+
+# Step 5: Build and push Docker image
 - task: Docker@2
   inputs:
     containerRegistry: 'rafdocker1' # Replace with your container registry service connection
@@ -44,3 +51,4 @@ steps:
     Dockerfile: 'AzureDockerfile' # Specify the relative path to your Dockerfile
     buildContext: '$(Build.SourcesDirectory)' # Specify the directory containing the build context
   displayName: 'Build and Push Docker Image'
+
