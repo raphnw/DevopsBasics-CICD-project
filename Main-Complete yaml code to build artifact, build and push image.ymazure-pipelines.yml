@@ -59,6 +59,5 @@ steps:
     buildContext: '$(Build.SourcesDirectory)'
     tags: |
       $(Build.BuildId)
-      latest
   displayName: 'Build and Push Docker Image with Tags'
 
