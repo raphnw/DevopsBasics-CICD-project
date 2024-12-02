@@ -1,0 +1,64 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+# Step 1: Run Maven to build and package the application
+- task: Maven@4
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.11'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+
+# Step 2: List contents of the artifact staging directory for debugging
+- script: |
+    echo "Listing contents of the artifact staging directory..."
+    ls -la $(Build.ArtifactStagingDirectory) || echo "No files found in artifact staging directory."
+  displayName: 'Debug Artifact Staging Directory'
+
+# Step 3: Copy .war files to the artifact staging directory
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '**/*.war'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Copy WAR files to artifact staging directory'
+
+# Step 4: Debug and list the temporary task outputs directory
+- script: |
+    echo "Checking the temporary task outputs directory..."
+    ls -la /home/vsts/work/_temp/task_outputs || echo "Directory does not exist or is empty."
+  displayName: 'Debug Task Outputs Directory'
+
+# Step 5: Publish the artifact to Azure DevOps
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'warfile'
+  displayName: 'Publish WAR file artifact'
+
+# Step 6: Build and push Docker image with versioning
+- task: Docker@2
+  inputs:
+    containerRegistry: 'rafdocker1' # Replace with your container registry service connection
+    repository: 'sonako2000/azuredevops-1' # Replace with your Docker repository
+    command: 'buildAndPush'
+    Dockerfile: 'AzureDockerfile'
+    buildContext: '$(Build.SourcesDirectory)'
+    tags: |
+      $(Build.BuildId)
+      $(Build.SourceBranchName)
+      latest
+  displayName: 'Build and Push Docker Image with Tags'
