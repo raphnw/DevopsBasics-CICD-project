@@ -60,7 +60,6 @@ steps:
     tags: |
       $(Build.BuildId)
       $(Build.SourceBranchName)
-      $(Build.SourceVersion:0:7)
       latest
   displayName: 'Build and Push Docker Image with Tags'
 
