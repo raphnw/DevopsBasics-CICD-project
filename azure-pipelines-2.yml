@@ -10,6 +10,7 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+# Step 1: Run Maven to build and package the application
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
@@ -21,24 +22,25 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
+# Step 2: List contents of the artifact directory for debugging
 - script: |
-    ls -la /home/vsts/work/1/a
+    ls -la $(Build.ArtifactStagingDirectory)
   displayName: 'List contents of the artifact directory'
+
+# Step 3: Copy .war files to the artifact staging directory
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)'
     Contents: '**/*.war'
-    TargetFolder: '/home/vsts/work/1/a'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Copy WAR files to artifact staging directory'
 
+# Step 4: Build and push Docker image
 - task: Docker@2
   inputs:
-    containerRegistry: 'rafdocker1'
-    command: 'login'
-
-- task: Docker@2
-  inputs:
-    containerRegistry: 'rafdocker1'
-    repository: 'sonako2000/azuredevops-1'
+    containerRegistry: 'rafdocker1' # Replace with your container registry service connection
+    repository: 'sonako2000/azuredevops-1' # Replace with your Docker repository
     command: 'buildAndPush'
-    Dockerfile: '**/AzureDockerfile'
-    buildContext: '**/'
+    Dockerfile: 'AzureDockerfile' # Specify the relative path to your Dockerfile
+    buildContext: '$(Build.SourcesDirectory)' # Specify the directory containing the build context
+  displayName: 'Build and Push Docker Image'
