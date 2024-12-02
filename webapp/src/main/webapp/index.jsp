@@ -7,6 +7,6 @@
 <h2> In this section, we will test the automation regression testing.</h2>
 <h2> Hope the automation process was successful?</h2>
 <h2> We are testing the production environment</h2>
-
+<h2> We are testing version 9 of the Java script</h2>
 
 
