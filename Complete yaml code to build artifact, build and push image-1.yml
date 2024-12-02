@@ -5,6 +5,7 @@
 
 trigger:
 - main
+- master
 
 pool:
   vmImage: ubuntu-latest
@@ -35,14 +36,20 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
   displayName: 'Copy WAR files to artifact staging directory'
 
-# Step 4: Publish the artifact to Azure DevOps
+# Step 4: Debug and list the temporary task outputs directory
+- script: |
+    echo "Listing contents of /home/vsts/work/_temp/task_outputs..."
+    ls -la /home/vsts/work/_temp/task_outputs
+  displayName: 'Debug Task Outputs Directory'
+
+# Step 5: Publish the artifact to Azure DevOps
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: 'warfile'
   displayName: 'Publish WAR file artifact'
 
-# Step 5: Build and push Docker image with versioning
+# Step 6: Build and push Docker image with versioning
 - task: Docker@2
   inputs:
     containerRegistry: 'rafdocker1' # Replace with your container registry service connection
@@ -52,5 +59,7 @@ steps:
     buildContext: '$(Build.SourcesDirectory)' # Specify the directory containing the build context
     tags: |
       $(Build.BuildId)
+      $(Build.SourceVersion:0:7
+      $(Build.SourceBranchName)
       latest
   displayName: 'Build and Push Docker Image with Tags'
