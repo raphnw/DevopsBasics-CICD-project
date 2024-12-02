@@ -6,7 +6,6 @@
 trigger:
 - main
 
-
 pool:
   vmImage: ubuntu-latest
 
@@ -25,9 +24,9 @@ steps:
 
 # Step 2: List contents of the artifact staging directory for debugging
 - script: |
-    echo "Listing contents of the artifact staging directory:"
-    ls -la $(Build.ArtifactStagingDirectory) || echo "Directory not found, continuing..."
-  displayName: 'List contents of the artifact directory'
+    echo "Listing contents of the artifact staging directory..."
+    ls -la $(Build.ArtifactStagingDirectory) || echo "No files found in artifact staging directory."
+  displayName: 'Debug Artifact Staging Directory'
 
 # Step 3: Copy .war files to the artifact staging directory
 - task: CopyFiles@2
@@ -39,7 +38,7 @@ steps:
 
 # Step 4: Debug and list the temporary task outputs directory
 - script: |
-    echo "Checking the temporary task outputs directory:"
+    echo "Checking the temporary task outputs directory..."
     ls -la /home/vsts/work/_temp/task_outputs || echo "Directory does not exist or is empty."
   displayName: 'Debug Task Outputs Directory'
 
@@ -56,20 +55,10 @@ steps:
     containerRegistry: 'rafdocker1' # Replace with your container registry service connection
     repository: 'sonako2000/azuredevops-1' # Replace with your Docker repository
     command: 'buildAndPush'
-    Dockerfile: 'AzureDockerfile' # Specify the relative path to your Dockerfile
-    buildContext: '$(Build.SourcesDirectory)' # Specify the directory containing the build context
+    Dockerfile: 'AzureDockerfile'
+    buildContext: '$(Build.SourcesDirectory)'
     tags: |
       $(Build.BuildId)
       latest
   displayName: 'Build and Push Docker Image with Tags'
 
-# Step 7: Additional Debugging for Bash Exit Codes
-- script: |
-    echo "Debugging pipeline environment..."
-    echo "Current directory:"
-    pwd
-    echo "Files in working directory:"
-    ls -la || echo "Working directory is empty or inaccessible."
-    echo "Environment variables:"
-    printenv
-  displayName: 'Debug Pipeline Environment'
